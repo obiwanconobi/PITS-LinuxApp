@@ -21,16 +21,16 @@ List<DiskInformationDto> diskInformation = new List<DiskInformationDto>();
 DeviceInformationDto deviceInformationDto = new DeviceInformationDto();
 
 
-//Register Device
+//Register Device - This should either register the new device, or return the machineId for the already registedDevice
 
-//DeviceRegistrationService regService = new DeviceRegistrationService();
-//var clientId = regService.Register();
+DeviceRegistrationService regService = new DeviceRegistrationService();
+var machineId = regService.Register();
 
 
 
 //Device Info
 
-deviceInformationDto.MachineGuid = Guid.Parse(config.GetSection("machineId").Value.ToString());
+deviceInformationDto.MachineGuid = machineId;
 deviceInformationDto.ClientID = Guid.Parse(config.GetSection("clientId").Value);
 deviceInformationDto.UserID = Guid.NewGuid();
 
@@ -86,7 +86,7 @@ foreach(var disk in hardwareInfo.DriveList)
     diskInfo.LoggedDateTime = DateTime.Now;
     diskInfo.DiskUsedSpace = driveInfo.TotalSize - driveInfo.AvailableFreeSpace;
     diskInfo.ClientId = Guid.Parse(config.GetSection("clientId").Value);
-    diskInfo.DeviceId = Guid.Parse(config.GetSection("machineId").Value.ToString());
+    diskInfo.DeviceId = machineId;
 
     deviceInformationDto.DiskInformation.Add(diskInfo);
    // var result = driveInfo.DriveFormat;
