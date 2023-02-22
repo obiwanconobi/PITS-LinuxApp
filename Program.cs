@@ -4,16 +4,22 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Configuration;
 using LinuxApp.Services.Remote;
 using ByteSizeLib;
-
+using HardwareInformation;
+using System.Diagnostics;
+using LinuxApp.Objects;
+using LinuxApp.Services.Local;
 
 Console.WriteLine("Hello, World!");
 
-IHardwareInfo hardwareInfo = new HardwareInfo();
+IHardwareInfo hardwareInfo = new Hardware.Info.HardwareInfo();
 hardwareInfo.RefreshAll();
 
 var configuration = new ConfigurationBuilder()
      .AddJsonFile($"appsettings.json");
 var config = configuration.Build();
+
+bool skipClockspeedTest;
+MachineInformation info = MachineInformationGatherer.GatherInformation(skipClockspeedTest = true);
 
 
 
@@ -27,7 +33,8 @@ DeviceInformationDto deviceInformationDto = new DeviceInformationDto();
 DeviceRegistrationService regService = new DeviceRegistrationService();
 var machineId = await regService.Register();
 
-
+CPUService cpuinfo = new CPUService();
+var cpuInfoResult = cpuinfo.GetCpuInfo();
 
 //Device Info
 
@@ -51,23 +58,47 @@ deviceInformationDto.Username = "TestUser";
 
 foreach (var cpu in hardwareInfo.CpuList)
 {
-    deviceInformationDto.CPUModel = cpu.Name;
+    //deviceInformationDto.CPUModel = cpu.Name;
     deviceInformationDto.CPUVendor = cpu.Manufacturer;
-    deviceInformationDto.CPUCores = Convert.ToInt32(cpu.NumberOfCores);
+    //deviceInformationDto.CPUCores = Convert.ToInt32(cpu.NumberOfCores);
     deviceInformationDto.CPUCurrentSpeed = cpu.CurrentClockSpeed;
 
     Console.WriteLine(cpu.CurrentClockSpeed);
 }
 
+deviceInformationDto.CPUModel = cpuInfoResult.CpuName;
+deviceInformationDto.CPUCores = cpuInfoResult.NumCpuCores;
+deviceInformationDto.CPUCurrentLoad = cpuInfoResult.CpuLoad;
+
 
 //Get Mem use and free 
 foreach (var mem in hardwareInfo.MemoryList)
 {
+
+    // Run the "free" command in a bash shell and capture the output
+    Process process = new Process();
+    process.StartInfo.FileName = "/bin/bash";
+    process.StartInfo.Arguments = "-c \"free -h\"";
+    process.StartInfo.UseShellExecute = false;
+    process.StartInfo.RedirectStandardOutput = true;
+    process.Start();
+    string output = process.StandardOutput.ReadToEnd();
+    process.WaitForExit();
+
+    ParseMemoryInfo parser = new ParseMemoryInfo();
+    MemoryInfo memInfo = parser.ParseMemory(output);
+
+
+   // var totalCapacity =;
+    var freeCapacity = 0;
+    var usedCapacity = 0;
+  
+
     var total = ByteSize.FromBytes(mem.Capacity).GigaBytes;
 
-    deviceInformationDto.TotalRam = Math.Round(Convert.ToDouble(ByteSize.FromBytes(mem.Capacity).GigaBytes), 2);
+    deviceInformationDto.TotalRam = memInfo.TotalRam;
     deviceInformationDto.RamSpeed = Convert.ToInt32(mem.Speed);
-    deviceInformationDto.FreeRam = 0;
+    deviceInformationDto.FreeRam = memInfo.FreeRam;
     deviceInformationDto.RamVendor = "Virtual";
     // deviceInformationDto.FreeRam = 
     //deviceInformationDto.TotalRam = mem.
@@ -100,7 +131,7 @@ foreach (var disk in hardwareInfo.DriveList)
 
 
 DeviceLogService logService = new DeviceLogService();
-logService.UploadData(deviceInformationDto);
+await logService.UploadData(deviceInformationDto);
 
 
 

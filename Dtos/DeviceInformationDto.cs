@@ -24,10 +24,11 @@ namespace LinuxApp.Dtos
         public string CPUVendor { get; set; }
         public int CPUCores { get; set; }
         public decimal CPUCurrentSpeed { get; set; }
+        public decimal CPUCurrentLoad { get; set; }
         public string CPUModel { get; set; }
         public double CPUTemp { get; set; }
-        public double FreeRam { get; set; }
-        public double TotalRam { get; set; }
+        public decimal FreeRam { get; set; }
+        public decimal TotalRam { get; set; }
         public string RamVendor { get; set; }
         public int RamSpeed { get; set; }
         public DateTime LoggedDateTime { get; set; }

@@ -35,7 +35,7 @@ namespace LinuxApp.Services.Remote
             var result = JsonSerializer.Serialize<DeviceInformationDto>(content);
             Console.WriteLine(result);
             //Send UUID to API and Get back the machineKey to save 
-            var response2 = client.PostAsJsonAsync("FullDeviceLog", content).Result;
+            var response2 = await client.PostAsJsonAsync("FullDeviceLog", content);
 
             if (response2.IsSuccessStatusCode)
             {
