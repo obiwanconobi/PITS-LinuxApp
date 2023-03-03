@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,9 +18,6 @@ namespace LinuxApp.Services.Remote
 {
     public class DeviceRegistrationService
     {
-
-        
-
 
         public async Task<Guid> Register()
         {

@@ -8,8 +8,13 @@ using HardwareInformation;
 using System.Diagnostics;
 using LinuxApp.Objects;
 using LinuxApp.Services.Local;
+using Microsoft.IdentityModel.Tokens;
 
 Console.WriteLine("Hello, World!");
+
+RunScriptService runner = new RunScriptService();
+
+
 
 IHardwareInfo hardwareInfo = new Hardware.Info.HardwareInfo();
 hardwareInfo.RefreshAll();
@@ -32,6 +37,21 @@ DeviceInformationDto deviceInformationDto = new DeviceInformationDto();
 
 DeviceRegistrationService regService = new DeviceRegistrationService();
 var machineId = await regService.Register();
+
+
+
+//get scriptstToRun
+
+GetScriptsToRunService scriptsToRun = new GetScriptsToRunService();
+var scripts = await scriptsToRun.Get(machineId, "Ubuntu");
+foreach (var script in scripts)
+{
+    runner.RunScript(script.scripts);
+}
+
+
+
+
 
 CPUService cpuinfo = new CPUService();
 var cpuInfoResult = cpuinfo.GetCpuInfo();
@@ -103,6 +123,59 @@ foreach (var mem in hardwareInfo.MemoryList)
     // deviceInformationDto.FreeRam = 
     //deviceInformationDto.TotalRam = mem.
 }
+
+
+
+Process process2 = new Process();
+process2.StartInfo.FileName = "/bin/bash";
+process2.StartInfo.Arguments = "-c \"df -h --type btrfs --type ext4 --type ext3 --type ext2 --type vfat --type iso9660 --type drvfs --output=source,size,used,avail\"";
+process2.StartInfo.UseShellExecute = false;
+process2.StartInfo.RedirectStandardOutput = true;
+process2.Start();
+
+// Read the output of the "df" command and parse it into a list of DriveInformation objects
+string output2 = process2.StandardOutput.ReadToEnd();
+string[] lines = output2.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+List<DriveInformation> driveInfoList = new List<DriveInformation>();
+
+for (int i = 0; i < lines.Length; i++)
+{
+    string[] fields = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+    if(fields.IsNullOrEmpty() || fields[0] == "Filesystem") continue;
+
+
+
+        DriveInformation driveInfo = new DriveInformation();
+        driveInfo.DriveName = fields[0];
+        try 
+        {
+            driveInfo.TotalSize = decimal.Parse(fields[1].Replace("G", "").Replace("T", ""));
+            driveInfo.UsedSpace = decimal.Parse(fields[2].Replace("G", ""));
+            driveInfo.FreeSpace = decimal.Parse(fields[3].Replace("G", ""));
+            
+        
+        }catch(Exception e)
+        {
+             continue;
+        }
+        
+        
+        
+        driveInfoList.Add(driveInfo);
+    
+
+   
+}
+
+
+process2.WaitForExit();
+process2.Close();
+
+
+
+
+
 
 //Get Disk Information
 foreach (var disk in hardwareInfo.DriveList)
