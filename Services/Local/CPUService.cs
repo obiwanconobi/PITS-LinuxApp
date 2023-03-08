@@ -63,7 +63,8 @@ namespace LinuxApp.Services.Local
 
             var regex = new Regex(@"\s+(\d+\.\d+)\s+$");
             var match = regex.Match(output);
-             cpuInfo.CpuLoad = decimal.Parse(match.Groups[1].Value);
+           // var from100 = 100 - match.Groups[1].Value;
+             cpuInfo.CpuLoad = 100 - decimal.Parse(match.Groups[1].Value);
 
             return cpuInfo;
         }

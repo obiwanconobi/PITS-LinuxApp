@@ -95,36 +95,36 @@ deviceInformationDto.CPUCurrentLoad = cpuInfoResult.CpuLoad;
 foreach (var mem in hardwareInfo.MemoryList)
 {
 
-    // Run the "free" command in a bash shell and capture the output
-    Process process = new Process();
-    process.StartInfo.FileName = "/bin/bash";
-    process.StartInfo.Arguments = "-c \"free -h\"";
-    process.StartInfo.UseShellExecute = false;
-    process.StartInfo.RedirectStandardOutput = true;
-    process.Start();
-    string output = process.StandardOutput.ReadToEnd();
-    process.WaitForExit();
-
-    ParseMemoryInfo parser = new ParseMemoryInfo();
-    MemoryInfo memInfo = parser.ParseMemory(output);
-
-
-   // var totalCapacity =;
-    var freeCapacity = 0;
-    var usedCapacity = 0;
-  
-
-    var total = ByteSize.FromBytes(mem.Capacity).GigaBytes;
-
-    deviceInformationDto.TotalRam = memInfo.TotalRam;
-    deviceInformationDto.RamSpeed = Convert.ToInt32(mem.Speed);
-    deviceInformationDto.FreeRam = memInfo.FreeRam;
-    deviceInformationDto.RamVendor = "Virtual";
-    // deviceInformationDto.FreeRam = 
-    //deviceInformationDto.TotalRam = mem.
+ 
 }
 
+// Run the "free" command in a bash shell and capture the output
+Process process = new Process();
+process.StartInfo.FileName = "/bin/bash";
+process.StartInfo.Arguments = "-c \"free -h\"";
+process.StartInfo.UseShellExecute = false;
+process.StartInfo.RedirectStandardOutput = true;
+process.Start();
+string output = process.StandardOutput.ReadToEnd();
+process.WaitForExit();
 
+ParseMemoryInfo parser = new ParseMemoryInfo();
+MemoryInfo memInfo = parser.ParseMemory(output);
+
+
+// var totalCapacity =;
+var freeCapacity = 0;
+var usedCapacity = 0;
+  
+
+//var total = ByteSize.FromBytes(mem.Capacity).GigaBytes;
+
+deviceInformationDto.TotalRam = memInfo.TotalRam;
+deviceInformationDto.RamSpeed = 0;
+deviceInformationDto.FreeRam = memInfo.FreeRam;
+deviceInformationDto.RamVendor = "Virtual";
+// deviceInformationDto.FreeRam = 
+//deviceInformationDto.TotalRam = mem.
 
 Process process2 = new Process();
 process2.StartInfo.FileName = "/bin/bash";
