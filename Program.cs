@@ -123,8 +123,7 @@ deviceInformationDto.TotalRam = memInfo.TotalRam;
 deviceInformationDto.RamSpeed = 0;
 deviceInformationDto.FreeRam = memInfo.FreeRam;
 deviceInformationDto.RamVendor = "Virtual";
-// deviceInformationDto.FreeRam = 
-//deviceInformationDto.TotalRam = mem.
+
 
 Process process2 = new Process();
 process2.StartInfo.FileName = "/bin/bash";
@@ -194,9 +193,7 @@ foreach (var disk in hardwareInfo.DriveList)
     diskInfo.DeviceId = Guid.Parse(machineId.ToString());
 
     deviceInformationDto.DiskInformation.Add(diskInfo);
-    // var result = driveInfo.DriveFormat;
-    //  diskInfo.IsSSD = driveInfo.DriveType;
-    //diskInfo.DiskFreeSpace = disk.
+   
 }
 
 
