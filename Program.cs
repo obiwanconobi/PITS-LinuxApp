@@ -112,7 +112,7 @@ ParseMemoryInfo parser = new ParseMemoryInfo();
 MemoryInfo memInfo = parser.ParseMemory(output);
 
 
-// var totalCapacity =;
+
 var freeCapacity = 0;
 var usedCapacity = 0;
   
