@@ -117,7 +117,7 @@ var freeCapacity = 0;
 var usedCapacity = 0;
   
 
-//var total = ByteSize.FromBytes(mem.Capacity).GigaBytes;
+
 
 deviceInformationDto.TotalRam = memInfo.TotalRam;
 deviceInformationDto.RamSpeed = 0;
