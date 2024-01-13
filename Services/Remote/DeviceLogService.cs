@@ -26,7 +26,7 @@ namespace LinuxApp.Services.Remote
                System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             HttpClient client = new HttpClient();
             GenerateJwtToken jwt = new GenerateJwtToken();
-            client.BaseAddress = new Uri("https://api.panaro.uk");
+            client.BaseAddress = new Uri(config.GetSection("BaseUrl").Value);
 
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 

@@ -14,10 +14,10 @@ namespace LinuxApp.Services.Remote
         
         public string Generate()
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345dfgbM4kf5kfklel3skdkbjvnDFGDD234fgdsdfsdtkdsmcmsdllasLSDaEVVSF123445gdfgdfgdfgwercvddk"));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var tokeOptions = new JwtSecurityToken(
-                issuer: "https://api.panaro.uk",
+                issuer: config.GetSection("BaseUrl").Value,
                 audience: "webapp",
                 claims: new List<Claim>(),
                 signingCredentials: signinCredentials,

@@ -12,6 +12,10 @@ namespace LinuxApp.Shared
 {
     public class ApiClientGet
     {
+        var configuration = new ConfigurationBuilder()
+        .AddJsonFile($"appsettings.json");
+        var config = configuration.Build();
+
         public async Task<T> GetRequest<T>(string uri)
         {
             try
@@ -20,7 +24,7 @@ namespace LinuxApp.Shared
                 {
                     System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                     GenerateJwtToken jwt = new GenerateJwtToken();
-                    client.BaseAddress = new Uri("https://api.panaro.uk");
+                    client.BaseAddress = new Uri(config.GetSection("BaseUrl").Value);
                     client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt.Generate());
