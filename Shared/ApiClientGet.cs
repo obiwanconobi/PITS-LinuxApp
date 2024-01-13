@@ -12,12 +12,15 @@ namespace LinuxApp.Shared
 {
     public class ApiClientGet
     {
-        var configuration = new ConfigurationBuilder()
-        .AddJsonFile($"appsettings.json");
-        var config = configuration.Build();
+        
 
         public async Task<T> GetRequest<T>(string uri)
         {
+
+            var configuration = new ConfigurationBuilder()
+            .AddJsonFile($"appsettings.json");
+            var config = configuration.Build();
+
             try
             {
                 using (var client = new HttpClient())
