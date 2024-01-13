@@ -31,6 +31,7 @@ namespace LinuxApp.Dtos
         public decimal TotalRam { get; set; }
         public string RamVendor { get; set; }
         public int RamSpeed { get; set; }
+        public string connectionId {get;set;}
         public DateTime LoggedDateTime { get; set; }
         public DateTime BoardedDateTime { get; set; }
         public DateTime DeviceCreateDateTime { get; set; }

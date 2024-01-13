@@ -16,6 +16,10 @@ RunScriptService runner = new RunScriptService();
 
 
 
+
+
+
+
 IHardwareInfo hardwareInfo = new Hardware.Info.HardwareInfo();
 hardwareInfo.RefreshAll();
 
@@ -25,6 +29,40 @@ var config = configuration.Build();
 
 bool skipClockspeedTest;
 MachineInformation info = MachineInformationGatherer.GatherInformation(skipClockspeedTest = true);
+
+HubConnection hubConnection = new HubConnectionBuilder()
+              // .WithUrl("https://api.panaro.uk/signalr") // Replace with the actual URL of your SignalR hub
+              .WithUrl(new Uri(config.GetSection("clientId").Value + "signalr"))
+               .Build();
+
+
+ // Start the connection
+            try
+                {
+                    await hubConnection.StartAsync();
+                    
+            }
+                catch (Exception ex) 
+                {
+                LogToBox("Connection To SignalR Failed");
+                }
+            hubConnection.Closed += HubConnection_Closed;
+
+                var connId = hubConnection.ConnectionId;
+                
+            LogToBox("Connection Id: " + connId);
+                // Invoke methods on the hub
+               // await hubConnection.InvokeAsync("MethodName", arg1, arg2);
+
+                // Subscribe to hub events
+                hubConnection.On<PitsHubScriptDto>("ReceiveMessage", (message) =>
+                {
+
+                    LogToBox("Running Script: " + message.Script);
+
+                    runner.RunScript(message.Script);
+
+                });
 
 
 
@@ -73,7 +111,7 @@ deviceInformationDto.Hostname = System.Net.Dns.GetHostName();
 deviceInformationDto.MachineType = "Server";
 deviceInformationDto.Username = "TestUser";
 
-
+deviceInformationDto.connectionId = "";
 //Get Cpu Freq and Load
 
 foreach (var cpu in hardwareInfo.CpuList)
@@ -213,6 +251,3 @@ foreach (var mb in hardwareInfo.BiosList)
 
 
 
-
-
-// See https://aka.ms/new-console-template for more information
