@@ -9,6 +9,7 @@ using System.Diagnostics;
 using LinuxApp.Objects;
 using LinuxApp.Services.Local;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.SignalR.Client;
 
 Console.WriteLine("Hello, World!");
 
@@ -32,8 +33,8 @@ MachineInformation info = MachineInformationGatherer.GatherInformation(skipClock
 
 HubConnection hubConnection = new HubConnectionBuilder()
               // .WithUrl("https://api.panaro.uk/signalr") // Replace with the actual URL of your SignalR hub
-              .WithUrl(new Uri(config.GetSection("clientId").Value + "signalr"))
-               .Build();
+              .WithUrl(new Uri(config.GetSection("BaseUrl").Value + "signalr"))
+              .Build();
 
 
  // Start the connection
@@ -44,13 +45,13 @@ HubConnection hubConnection = new HubConnectionBuilder()
             }
                 catch (Exception ex) 
                 {
-                LogToBox("Connection To SignalR Failed");
+              //  LogToBox("Connection To SignalR Failed");
                 }
-            hubConnection.Closed += HubConnection_Closed;
+         //   hubConnection.Closed += HubConnection_Closed;
 
                 var connId = hubConnection.ConnectionId;
                 
-            LogToBox("Connection Id: " + connId);
+           // LogToBox("Connection Id: " + connId);
                 // Invoke methods on the hub
                // await hubConnection.InvokeAsync("MethodName", arg1, arg2);
 
@@ -58,7 +59,7 @@ HubConnection hubConnection = new HubConnectionBuilder()
                 hubConnection.On<PitsHubScriptDto>("ReceiveMessage", (message) =>
                 {
 
-                    LogToBox("Running Script: " + message.Script);
+                   // LogToBox("Running Script: " + message.Script);
 
                     runner.RunScript(message.Script);
 
@@ -80,12 +81,12 @@ var machineId = await regService.Register();
 
 //get scriptstToRun
 
-GetScriptsToRunService scriptsToRun = new GetScriptsToRunService();
-var scripts = await scriptsToRun.Get(machineId, "Ubuntu");
-foreach (var script in scripts)
-{
-    runner.RunScript(script.scripts);
-}
+//GetScriptsToRunService scriptsToRun = new GetScriptsToRunService();
+//var scripts = await scriptsToRun.Get(machineId, "Ubuntu");
+//foreach (var script in scripts)
+//{
+ //   runner.RunScript(script.scripts);
+//}
 
 
 
@@ -111,7 +112,7 @@ deviceInformationDto.Hostname = System.Net.Dns.GetHostName();
 deviceInformationDto.MachineType = "Server";
 deviceInformationDto.Username = "TestUser";
 
-deviceInformationDto.connectionId = "";
+deviceInformationDto.connectionId = connId;
 //Get Cpu Freq and Load
 
 foreach (var cpu in hardwareInfo.CpuList)

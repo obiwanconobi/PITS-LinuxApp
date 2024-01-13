@@ -6,6 +6,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace LinuxApp.Services.Remote
 {
@@ -14,6 +16,11 @@ namespace LinuxApp.Services.Remote
         
         public string Generate()
         {
+
+            var configuration = new ConfigurationBuilder()
+            .AddJsonFile($"appsettings.json");
+            var config = configuration.Build();
+
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345dfgbM4kf5kfklel3skdkbjvnDFGDD234fgdsdfsdtkdsmcmsdllasLSDaEVVSF123445gdfgdfgdfgwercvddk"));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var tokeOptions = new JwtSecurityToken(

@@ -23,6 +23,10 @@ namespace LinuxApp.Services.Remote
         public async Task<HttpResponseMessage> UploadData(DeviceInformationDto content)
         {
 
+            var configuration = new ConfigurationBuilder()
+            .AddJsonFile($"appsettings.json");
+            var config = configuration.Build();
+
                System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             HttpClient client = new HttpClient();
             GenerateJwtToken jwt = new GenerateJwtToken();

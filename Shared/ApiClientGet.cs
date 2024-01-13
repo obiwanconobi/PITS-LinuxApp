@@ -7,6 +7,8 @@ using System.Net.Http.Headers;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace LinuxApp.Shared
 {
